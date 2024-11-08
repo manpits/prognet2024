@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kontak;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -12,9 +13,7 @@ class KontakController extends Controller
      */
     public function index()
     {
-        // install guzzle : composer require guzzlehttp/guzzle
-        $response = Http::get('https://jsonplaceholder.typicode.com/users');
-        $contacts = $response->json();
+        $contacts = Kontak::all();
         return view('kontaks', compact('contacts'));
     }
 
@@ -23,7 +22,7 @@ class KontakController extends Controller
      */
     public function create()
     {
-        return 'Ini method create';
+        return view('kontak-create');
     }
 
     /**
@@ -31,7 +30,17 @@ class KontakController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $newKontak = new Kontak();
+
+        $newKontak->nama = $request['nama'];
+        $newKontak->alamat = $request['alamat'];
+        $newKontak->telepon = $request['telepon'];
+        $newKontak->email = $request['email'];
+        $newKontak->lahir = $request['lahir'];
+
+        $newKontak->save();
+
+        return redirect()->route('kontaks.index');
     }
 
     /**
@@ -47,7 +56,8 @@ class KontakController extends Controller
      */
     public function edit(string $id)
     {
-        return $id;
+        $kontak =  Kontak::find($id);
+        return view('kontak-edit', compact('kontak'));
     }
 
     /**
@@ -55,7 +65,17 @@ class KontakController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $kontak = Kontak::find($id);
+
+        $kontak->nama = $request['nama'];
+        $kontak->alamat = $request['alamat'];
+        $kontak->telepon = $request['telepon'];
+        $kontak->email = $request['email'];
+        $kontak->lahir = $request['lahir'];
+
+        $kontak->save();
+
+        return redirect()->route('kontaks.index');
     }
 
     /**
@@ -63,6 +83,8 @@ class KontakController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $kontak = Kontak::find($id);
+        $kontak->delete();
+        return redirect()->route('kontaks.index');
     }
 }
